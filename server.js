@@ -10,6 +10,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -35,8 +36,18 @@ app.use(session({
 }));
 
 app.use(cors());
+app.use(cors({ origin: "https://indica.essencial.com.br" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://indica.essencial.com.br");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+    return res.status(200).json({});
+  }
+  res.status(404).json({ error: "Rota não encontrada" });
+});
 
 // Upload com Multer
 if (!fs.existsSync('uploads')) {
