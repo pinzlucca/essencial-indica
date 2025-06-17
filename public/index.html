@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Essencial Indica</title>
+  <link rel="stylesheet" href="indicarForm.css">
+</head>
+<body>
+  <header>
+  <img src="/images/LOGO-BRANCO.png" alt="">
+    <ul class="nav" id="nav">
+      <li>
+        <a id="navlink" class="nav__link" target="_blank" href="vagas.html" rel="noopener noreferrer">VAGAS</a>
+      </li>
+      <li>
+        <a id="navlink" href="#QUEMSOMOS" class="nav__link">QUEM SOMOS</a>
+      </li>
+      <li>
+        <a id="navlink" href="#nossos-serviços" class="nav__link">NOSSOS SERVIÇOS</a>
+      </li>
+      <li>
+        <a id="navlink" href="#solicite-orçamento" class="nav__link">SOLICITE UM ORÇAMENTO</a>
+      </li>
+    </ul>                   
+
+    <!-- MENU MOBILE -->
+
+    <button type="button" id="menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+  <div class="indica-app">
+      <h1 class="title-indica">ESSENCIAL INDICA</h1>
+    <p class="indica-text">
+      Participe do nosso programa Essencial Indica e ganhe R$100,00 caso o indicado seja contratado! Leia o nosso regulamento para estar por dentro de todas as regras! <a href="controleIndica.html">acesse o regulamento aqui!</a>
+    </p>
+    <form id="jobForm" class="indicaForm" method="POST" action="/submit" enctype="multipart/form-data">
+      <label for="nome" class="indica-label">Nome Completo:</label>
+      <input class="input" type="text" id="nome" name="nome" required>
+      
+      <label for="telefone" class="indica-label">Telefone:</label>
+      <input class="input" type="tel" id="telefone" name="telefone" required>
+      
+      <label for="posto" class="indica-label">Posto de Trabalho:</label>
+      <input class="input" type="text" id="posto" name="posto" required>
+      
+      <label for="regras" class="">
+        <input type="checkbox" id="regras" name="regras" > Estou de acordo com as regras. <a href="regras.html">Aqui.</a>
+      </label>
+      <label for="lgpd" class="">
+        <input type="checkbox" id="lgpd" name="lgpd" > Estou de acordo com a política de privacidade da Empresa. <a href="/LGPD.html">Acesse aqui.</a>
+      </label>
+      
+      <label for="curriculo" class="indica-label">Adicionar Currículo:</label>
+      <input class="input" type="file" id="curriculo" name="curriculo" accept=".pdf, .jpg, .png" required>
+      
+      <div class="btn-cont">
+        <button type="submit" class="btn-indica">ENVIAR</button>  
+      </div>
+      </form>
+  </div>
+  <footer>
+                <div class="footer">
+                    <div class="container-contato">
+                        <img src="/images/LOGOTESTE.png">
+                        <a href="https://wa.me/05519988862213?text=Entre%20em%20contato%20conosco"><button>Fale com a gente! <img class="wpp-1" src="/images/wpp-1.png"></img></button></a>
+                            <span></a> 
+                            Rua Noel Franco da Silva 139;<br>
+                            Lote Pq Real Mogi Guaçu;<br>
+                            13845-070
+                        </span>
+                    </div>
+                    
+                    <div class="container-navaqui">
+                        <span>
+                            Navegue por aqui<br>
+                            <a href="vagas.html">Vagas</a> <br> 
+                            <a href="#QUEMSOMOS">Quem Somos</a> <br>
+                            
+                            <a href="#solicite-orçamento">Solicite Orçamento</a> <br>
+                            <a href="#nossos-serviços">Nossos Serviços</a> | <a href="LGPD.html">Privacidade</a>
+                        </span>
+                    </div>
+                    <div class="container-institu">
+                        <span>
+                            Institucional <br>
+                            comercial@essencial.com.br <br>
+                            (19) 3569-7010 | 3569-7011 <br>
+                            <span class="footer-icon">
+                                <a href="https://www.facebook.com/?locale=pt_BR" target="_blank" rel="noopener noreferrer">
+                                    <img src="images/faceicon2.png" alt="">
+                                </a>
+            
+                                <a href="https://www.instagram.com/grpessencial/" target="_blank" rel="noopener noreferrer">
+                                    <img src="images/instaicon2.png" alt="">
+                                </a>
+            
+                                <a href="https://br.linkedin.com/company/grpessencial" target="_blank" rel="noopener noreferrer">
+                                    <img src="images/LinkIcon.png" alt="">
+                                </a>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="direitos-reservados">
+                    <span>
+                        © Essencial todos os direitos reservados
+                    </span>
+                </div>
+            </footer>
+  
+
+  <script src="script.js"></script>
+  <script>
+    const formulario = document.getElementById('jobForm');
+
+    formulario.addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Formulário enviado com sucesso!');
+
+      setTimeout(() => {
+          formulario.submit(); // envia o formulário após o alert
+        }, 100); // 100ms é o suficiente
+    });
+  </script>
+</body>
+</html>
