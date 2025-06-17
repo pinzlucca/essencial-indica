@@ -38,8 +38,10 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false, // Altere para true se usar HTTPS
-      httpOnly: true
+      secure: false, // Altere para true se usar HTTPS em produção
+      httpOnly: true,
+      // Em produção com requisições cross-site, considere:
+      // sameSite: "none"
     }
   })
 );
@@ -47,13 +49,16 @@ app.use(
 // Configuração do CORS para autorizar requisições do seu frontend
 app.use(
   cors({
-    origin: "https://indica.essencial.com.br", // Atualize para o domínio do seu frontend
+    origin: "https://indica.essencial.com.br", // Atualize para o domínio do seu frontend se necessário
     credentials: true
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Servir arquivos estáticos da pasta "public"
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuração para uploads
 if (!fs.existsSync('uploads')) {
@@ -71,12 +76,22 @@ function autenticar(req, res, next) {
   res.status(401).json({ message: "Não autenticado" });
 }
 
+// Rota para servir a página de login (arquivo login.html na pasta public)
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Rota protegida para a página de controle (arquivo controleIndica.html na pasta public)
+app.get('/controleIndica', autenticar, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'controleIndica.html'));
+});
+
 // Endpoint de Login (retorna resposta em JSON)
 app.post('/login', (req, res) => {
   const { usuario, senha } = req.body;
   if (usuario === process.env.USER_ADMIN && senha === process.env.PASS_ADMIN) {
     req.session.autenticado = true;
-    return res.redirect('https://indica.essencial.com.br/controleIndica');
+    return res.status(200).json({ message: 'Login realizado com sucesso' });
   }
   return res.status(401).json({ message: 'Usuário ou senha inválidos' });
 });
@@ -162,4 +177,4 @@ app.use((req, res) => {
 // Inicializa o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-}); 
+});
