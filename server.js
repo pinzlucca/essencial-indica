@@ -10,13 +10,13 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log('MongoDB conectado'))
   .catch(err => console.error('Erro ao conectar no MongoDB:', err));
 
+// Modelo
 const indicacaoSchema = new mongoose.Schema({
   nome: String,
   telefone: String,
@@ -28,30 +28,29 @@ const indicacaoSchema = new mongoose.Schema({
 });
 const Indicacao = mongoose.model('Indicacao', indicacaoSchema);
 
-// Sessão para login
+// Sessão
 app.use(session({
   secret: 'chave-secreta',
   resave: false,
   saveUninitialized: true
 }));
 
-app.use(cors());
-app.use(cors({ origin: "https://indica.essencial.com.br" }));
+// CORS
+app.use(cors({ origin: "https://indica.essencial.com.br", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Headers CORS extras
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "https://indica.essencial.com.br");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    return res.status(200).json({});
-  }
-  res.status(404).json({ error: "Rota não encontrada" });
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+  next();
 });
 
-// Upload com Multer
+// Uploads
 if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
+  fs.mkdirSync('uploads');
 }
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -59,16 +58,17 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Middleware de autenticação
+// Autenticação
 function autenticar(req, res, next) {
   if (req.session && req.session.autenticado) return next();
   res.redirect('/login.html');
 }
 
-// Rotas públicas
+// Arquivos públicos
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Rota de login (POST)
+// Login
 app.post('/login', (req, res) => {
   const { usuario, senha } = req.body;
   if (usuario === process.env.USER_ADMIN && senha === process.env.PASS_ADMIN) {
@@ -79,12 +79,12 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Protege acesso à tela de controle
+// Tela protegida
 app.get('/controleIndica.html', autenticar, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'controleIndica.html'));
 });
 
-// Rota para baixar currículo (protegido)
+// Baixar currículo
 app.get('/download/:id', autenticar, async (req, res) => {
   try {
     const indicacao = await Indicacao.findById(req.params.id);
@@ -102,7 +102,7 @@ app.get('/download/:id', autenticar, async (req, res) => {
   }
 });
 
-// Salvar indicação
+// Submit do formulário
 app.post('/submit', upload.single('curriculo'), async (req, res) => {
   const { nome, telefone, posto, regras } = req.body;
   const nova = new Indicacao({
@@ -116,13 +116,13 @@ app.post('/submit', upload.single('curriculo'), async (req, res) => {
   res.redirect('/index.html');
 });
 
-// Buscar indicações
+// Buscar todas indicações
 app.get('/indicacoes', autenticar, async (req, res) => {
   const dados = await Indicacao.find().sort({ createdAt: -1 });
   res.json(dados);
 });
 
-// Atualizar status da indicação
+// Atualizar status
 app.put('/indicacoes/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -143,6 +143,12 @@ app.delete('/indicacoes/:id', async (req, res) => {
   }
 });
 
+// 404 Final - deve estar no fim
+app.use((req, res) => {
+  res.status(404).send("Rota não encontrada.");
+});
+
+// Inicia servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
