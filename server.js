@@ -76,7 +76,7 @@ app.post('/login', (req, res) => {
   const { usuario, senha } = req.body;
   if (usuario === process.env.USER_ADMIN && senha === process.env.PASS_ADMIN) {
     req.session.autenticado = true;
-    return res.status(200).json({ message: 'Login realizado com sucesso' });
+    return res.redirect('https://indica.essencial.com.br/controleIndica');
   }
   return res.status(401).json({ message: 'Usuário ou senha inválidos' });
 });
@@ -162,4 +162,4 @@ app.use((req, res) => {
 // Inicializa o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-});
+}); 
